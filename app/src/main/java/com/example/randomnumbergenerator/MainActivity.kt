@@ -13,11 +13,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.Downloading
+import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.randomnumbergenerator.ui.theme.DeepViolet
@@ -95,6 +102,9 @@ fun MinimumValue(
                 unfocusedTextColor = Color.Black,
                 focusedTextColor = Color.Black,
                 cursorColor = Color.Black
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
             )
         )
     }
@@ -125,6 +135,9 @@ fun MaximumValue(
                 unfocusedTextColor = Color.Black,
                 focusedTextColor = Color.Black,
                 cursorColor = Color.Black
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number
             )
         )
     }
@@ -151,12 +164,21 @@ fun GeneratedNumber(modifier: Modifier = Modifier, generatedNumber: String) {
                 modifier = Modifier.padding(16.dp),
                 color = MaterialTheme.colorScheme.onPrimary
             )
-            Text(
-                text = generatedNumber,
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(16.dp),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+            if (generatedNumber == "?") {
+                Icon(
+                    imageVector = Icons.Default.Downloading,
+                    contentDescription = "Generated Number",
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            } else {
+                Text(
+                    text = generatedNumber,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }
@@ -217,10 +239,11 @@ fun RandomNumberGeneratorScreen(
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 GeneratedNumber(
-                    generatedNumber = if (randomNumberState == 0) "?" else
+                    generatedNumber = if (randomNumberState == 0) {
+                        "?"
+                    } else
                         randomNumberState.toString()
                 )
-
             }
         }
 
