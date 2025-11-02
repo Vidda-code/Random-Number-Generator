@@ -37,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.randomnumbergenerator.ui.theme.DeepViolet
 import com.example.randomnumbergenerator.ui.theme.LightLavender
-import com.example.randomnumbergenerator.ui.theme.MediumPink
 import com.example.randomnumbergenerator.ui.theme.MediumPurple
 import com.example.randomnumbergenerator.ui.theme.PalePink
 import com.example.randomnumbergenerator.ui.theme.RandomNumberGeneratorTheme
@@ -74,9 +73,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MinimumValue(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    minValue: String,
+    onValueChange: (String) -> Unit
 ) {
-    var minValue by remember { mutableStateOf("") }
     Card(
         modifier
             .size(width = 150.dp, height = 120.dp),
@@ -86,7 +86,7 @@ fun MinimumValue(
     ) {
         TextField(
             value = minValue,
-            onValueChange = { minValue = it },
+            onValueChange = onValueChange,
             label = { Text("Minimum") },
             singleLine = true,
             colors = TextFieldDefaults.colors(
@@ -103,9 +103,10 @@ fun MinimumValue(
 
 @Composable
 fun MaximumValue(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    maxValue: String,
+    onValueChange: (String) -> Unit
 ) {
-    var maxValue by remember { mutableStateOf("") }
     Card(
         modifier
             .size(width = 150.dp, height = 120.dp),
@@ -115,7 +116,7 @@ fun MaximumValue(
     ) {
         TextField(
             value = maxValue,
-            onValueChange = { maxValue = it },
+            onValueChange = onValueChange,
             label = { Text("Maximum") },
             singleLine = true,
             colors = TextFieldDefaults.colors(
@@ -130,8 +131,7 @@ fun MaximumValue(
 }
 
 @Composable
-fun GeneratedNumber(modifier: Modifier = Modifier) {
-    var generatedNumber by remember { mutableStateOf("") }
+fun GeneratedNumber(modifier: Modifier = Modifier, generatedNumber: String) {
     Card(
         modifier = Modifier
             .size(width = 350.dp, height = 250.dp),
@@ -152,7 +152,7 @@ fun GeneratedNumber(modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
-                text = "18",
+                text = generatedNumber,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(16.dp),
                 color = MaterialTheme.colorScheme.onPrimary
@@ -166,16 +166,22 @@ fun RandomNumberGeneratorScreen(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues
 ) {
-    var randomNumber by remember { mutableStateOf(0) }
+    var randomNumberState by remember { mutableStateOf(0) }
+    var minValueState by remember { mutableStateOf("") }
+    var maxValueState by remember { mutableStateOf("") }
+
     Column(
         modifier
             .fillMaxSize()
             .background(PalePink)
-            .padding(top = paddingValues.calculateTopPadding(), bottom = paddingValues.calculateBottomPadding()),
+            .padding(
+                top = paddingValues.calculateTopPadding(),
+                bottom = paddingValues.calculateBottomPadding()
+            ),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
 
-    ) {
+        ) {
         Card(
             modifier = Modifier
                 .size(width = 350.dp, height = 420.dp),
@@ -193,14 +199,27 @@ fun RandomNumberGeneratorScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
 
-                    MinimumValue()
+                    MinimumValue(
+                        minValue = minValueState,
+                        onValueChange = {
+                            minValueState = it
+                        }
+                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    MaximumValue()
+                    MaximumValue(
+                        maxValue = maxValueState,
+                        onValueChange = {
+                            maxValueState = it
+                        }
+                    )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                GeneratedNumber()
+                GeneratedNumber(
+                    generatedNumber = if (randomNumberState == 0) "?" else
+                        randomNumberState.toString()
+                )
 
             }
         }
@@ -209,7 +228,13 @@ fun RandomNumberGeneratorScreen(
 
 
         Button(
-            onClick = { randomNumber = (1..100).random() },
+            onClick = {
+                val min = minValueState.toIntOrNull()
+                val max = maxValueState.toIntOrNull()
+                if (min != null && max != null && min <= max) {
+                    randomNumberState = (min..max).random()
+                }
+            },
             modifier = Modifier
                 .size(width = 350.dp, height = 50.dp),
             shape = MaterialTheme.shapes.medium,
