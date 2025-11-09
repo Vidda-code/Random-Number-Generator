@@ -26,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -275,12 +276,31 @@ fun RandomNumberGeneratorScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun RandomNumberGeneratorPreview() {
     RandomNumberGeneratorTheme {
-        RandomNumberGeneratorScreen(
-            paddingValues = PaddingValues(16.dp)
-        )
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text("Random Number Generator") },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = DeepViolet,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+            ) { innerPadding ->
+                RandomNumberGeneratorScreen(
+                    paddingValues = innerPadding
+                )
+            }
+        }
+
     }
 }
